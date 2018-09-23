@@ -171,6 +171,128 @@ This will also install the `uaa` CLI, plus the internally used `bosh` CLI.
 
 When you first run `quaa up` it will download Apache Tomcat.
 
+## Configuring UAA
+
+Each time you run `quaa up` it will internally regenerate the configuration files for UAA, and any missing/new secrets and certificates.
+
+To view the UAA configuration file in its full YAML form:
+
+```plain
+$ quaa int
+assetBaseUrl: /resources/oss
+encryption:
+  active_key_label: uaa-encryption-key-1
+  encryption_keys:
+  - label: uaa-encryption-key-1
+    passphrase: fpmiaz5cucezhs6szbon
+issuer:
+  uri: http://localhost:8080
+jwt:
+  token:
+...
+```
+
+You can pass `--path /path/to/field` to select a single value or smaller snippet of the YAML file. For example to get the URI of your UAA:
+
+```plain
+$ quaa int --path /issuer/uri
+http://localhost:8080
+
+Succeeded
+```
+
+The "Succeeded" text is for human eyes only. It is automatically omitted if you use the command within scripts or wrapper commands:
+
+```plain
+$ uaa_uri=$(quaa int --path /issuer/uri)
+$ echo $uaa_uri
+http://localhost:8080
+```
+
+The default `quaa up` deployment of UAA incldues a single pre-configured UAA client `uaa_admin`:
+
+```plain
+$ quaa int --path /oauth/clients
+uaa_admin:
+  authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+  authorized-grant-types: client_credentials
+  override: true
+  scope: ""
+  secret: 1fa7h127dtys76rfhzzu
+```
+
+### Modifying UAA configuration
+
+We can modify the UAA configuration by including [JSON patches](https://github.com/cppforlife/go-patch) files in an `operators` folder.
+
+Within your project folder create an `operators` folder, and create a file `operators/myapp-client.yml`:
+
+```yaml
+---
+- type: replace
+  path: /oauth/clients/myapp?
+  value:
+    authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+    authorized-grant-types: client_credentials
+    override: true
+    scope: ""
+    secret: ((myapp_client_secret))
+
+- type: replace
+  path: /variables/-
+  value:
+    name: myapp_client_secret
+    type: password
+```
+
+Running `quaa int` again will merge your JSON patch file above into the default YAML. To see our new `/oauth/clients/myapp` configuration:
+
+```plain
+$ quaa int --path /oauth/clients
+myapp:
+  authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+  authorized-grant-types: client_credentials
+  override: true
+  scope: ""
+  secret: ypl4lbbgh73f3tvhl05g
+uaa_admin:
+  authorities: clients.read,clients.write,clients.secret,uaa.admin,scim.read,scim.write,password.write
+  authorized-grant-types: client_credentials
+  override: true
+  scope: ""
+  secret: 1fa7h127dtys76rfhzzu
+```
+
+The example above also introduces `((myapp_client_secret))` variables. A random secret password is generated for your `myapp` client.
+
+To get this value:
+
+```plain
+$ myapp_secret=$(quaa int --path /oauth/clients/myapp/secret)
+$ echo $myapp_secret
+ypl4lbbgh73f3tvhl05g
+```
+
+At this stage you have not modified your running UAA. You need to run `quaa up` again.
+
+```plain
+quaa up
+```
+
+For the [local](https://github.com/starkandwayne/quick-uaa-local) system you first need to Ctrl-C your running `quaa up` command.
+
+NOTE: the YAML schema of `quaa int` is different for [Deploy to any Cloud with BOSH](https://github.com/starkandwayne/quick-uaa-deployment). The YAML is a BOSH deployment manifest, rather than UAA configuration. But the ability to apply JSON patches is the same technique as demonstated above.
+
+You [read see more JSON patch examples](https://github.com/cppforlife/go-patch/blob/master/docs/examples.md) to learn more.
+
+### Example Configuration Patches
+
+Each project includes some example JSON patch files. The folder is different for each Quaa project:
+
+* [`manifests/ops-files`](https://github.com/starkandwayne/quick-uaa-local/tree/master/manifests/ops-files) for the local UAA system
+* [`ops`](https://github.com/starkandwayne/quick-uaa-deployment/tree/master/ops) and [`ops-examples`](https://github.com/starkandwayne/quick-uaa-deployment/tree/master/ops-examples) for the BOSH deployment system
+* [`ops-files/cf`](https://github.com/starkandwayne/quick-uaa-deployment-cf/tree/master/ops-files/cf) for the Cloud Foundry deployment system
+
 ## Continued Learning
 
 Your learning and exploration can continue from this point onwards.
