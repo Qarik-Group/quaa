@@ -293,6 +293,48 @@ Each project includes some example JSON patch files. The folder is different for
 * [`ops`](https://github.com/starkandwayne/quick-uaa-deployment/tree/master/ops) and [`ops-examples`](https://github.com/starkandwayne/quick-uaa-deployment/tree/master/ops-examples) for the BOSH deployment system
 * [`ops-files/cf`](https://github.com/starkandwayne/quick-uaa-deployment-cf/tree/master/ops-files/cf) for the Cloud Foundry deployment system
 
+### Variables
+
+After running `quaa up` the first time a `vars.yml` file is created to store default values.
+
+For the local example above the `vars.yml` might look like:
+
+```plain
+$ cat vars.yml
+route: "localhost:8888"
+db_scheme: memory
+```
+
+If you change `vars.yml` and run `quaa up` your UAA will be reconfigured upon startup.
+
+For example, the local UAA above is storing data in memory only. Changes will be lost when you stop your UAA.
+
+The local Quaa project currently also supports a local PostgreSQL server. Modify `vars.yml` to look similar to:
+
+```yaml
+route: "localhost:8080"
+db_scheme: postgresql
+db_username: "drnic"
+db_password: ""
+db_host: "localhost"
+db_port: 5432
+db_name: "quick-uaa-local"
+```
+
+When you run `quaa up` it will test the DB connection and fail fast if your PostgreSQL server is not running or your `vars.yml` is misconfigured. If successful, it will create the `quick-uaa-local` database if missing; finally it will run a UAA that will persist changes between sessions.
+
+Each Quaa system (local, Cloud Foundry, and BOSH) supports different variables in `vars.yml`.
+
+### Credentials
+
+After running `quaa up` the first time a `state` folder is created, and a `state/creds.yml` file is created to store generated secrets, certificates, etc.
+
+If you delete some of the key/values in this file and run `quaa up` again, it will regenerate new secrets.
+
+WARNING: do not delete and regenerate `uaa_encryption_key_1` as this will prevent the UAA from access its previously encrypted data.
+
+Support for rotating encryption keys is implemented in the UAA core team's own [UAA BOSH release](https://github.com/cloudfoundry/uaa-release/) with the [`uaa_key_rotator`](https://github.com/cloudfoundry/uaa-release/tree/develop/jobs/uaa_key_rotator) job. This feature is not yet implemented in any Quaa project.
+
 ## Continued Learning
 
 Your learning and exploration can continue from this point onwards.
