@@ -2,7 +2,7 @@
 
 `quaa` (pronounced Qu-Aye-Aye) is a family of projects to quickly deploy/run the Cloud Foundry UAA locally, or to a remote platform/cloud.
 
-* [Run locally](https://github.com/starkandwayne/quick-uaa-local)
+* [Run locally](https://github.com/starkandwayne/quick-uaa-local) (or with [MacOS Homebrew](#homebrew-installation))
 * [Deploy to any Cloud Foundry](https://github.com/starkandwayne/quick-uaa-deployment-cf)
 * [Deploy to any Cloud with BOSH](https://github.com/starkandwayne/quick-uaa-deployment)
 * [>> Request another target](https://github.com/starkandwayne/quaa/issues/new)
@@ -158,6 +158,18 @@ To view the two UAA users (`drnic@starkandwayne.com` and the bootstrapped `admin
 ```plain
 uaa users
 ```
+
+### Homebrew Installation
+
+Instead of the `git clone` approach for [Quick UAA Local](https://github.com/starkandwayne/quick-uaa-local) you can use Homebrew to install the `quaa` CLI and its associated files:
+
+```plain
+brew install starkandwayne/cf/quaa
+```
+
+This will also install the `uaa` CLI, plus the internally used `bosh` CLI.
+
+When you first run `quaa up` it will download Apache Tomcat.
 
 ## Continued Learning
 
