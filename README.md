@@ -2,11 +2,13 @@
 
 `quaa` (pronounced Qu-Aye-Aye) is a family of projects to quickly deploy/run the Cloud Foundry UAA locally, or to a remote platform/cloud.
 
+![testimonial-quick-uaa-local-davidlohle](/docs/images/testimonial-quick-uaa-local-davidlohle.png)
+
+![testimonial-quick-uaa-local-dennisleon](/docs/images/testimonial-quick-uaa-local-dennisleon.png)
+
+![testimonial-quick-uaa-local-drgao](/docs/images/testimonial-quick-uaa-local-drgao.png)
+
 * [Run locally](https://github.com/starkandwayne/quick-uaa-local) (or with [MacOS Homebrew](#homebrew-installation))
-
-    ![testimonial-quick-uaa-local-davidlohle](/docs/images/testimonial-quick-uaa-local-davidlohle.png)
-
-    ![testimonial-quick-uaa-local-dennisleon](/docs/images/testimonial-quick-uaa-local-dennisleon.png)
 
 * [Deploy to any Cloud Foundry](https://github.com/starkandwayne/quick-uaa-deployment-cf)
 * [Deploy to any Cloud with BOSH](https://github.com/starkandwayne/quick-uaa-deployment)
